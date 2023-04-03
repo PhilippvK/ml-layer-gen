@@ -135,5 +135,9 @@ To between conv2d/pool2d and dense layers a flatten layer might be required!
 #   filter_height: ignore
 #   filter_width: 10
 #   activation = relu
-python3 gen_model.py tflite out2.tflite 32,32,3 4 conv2d 32,4,4,2,2,1,1,SAME,channels_last,relu,1 avg_pool2d 2,2,2,2,VALID,channels_last flatten _ fully_connected ,10,relu
+python3 gen_model.py tflite out2.tflite 32,32,3 4 \
+    conv2d 32,4,4,2,2,1,1,SAME,channels_last,relu,1 \
+    avg_pool2d 2,2,2,2,VALID,channels_last \
+    flatten _ \
+    fully_connected ,10,relu
 ```
