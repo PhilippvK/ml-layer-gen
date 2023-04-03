@@ -1,0 +1,57 @@
+name: Generate Model
+on:
+  workflow_dispatch:
+    inputs:
+      format:
+        description: "Model Format (keras, tflite or relay)"
+        required: true
+        default: "tflite"
+      filename:
+        description: "Output File Name"
+        required: true
+        default: "model.tflite"
+      input_shape:
+        description: "Input Shape (comma-separated)"
+        required: true
+        default: "32,32,3"
+      num_layers:
+        description: "Number of Layers"
+        required: true
+        default: "1"
+      layers:
+        description: "Layers"
+        required: true
+        default: "conv2d 32,4,4,2,2,1,1,SAME,channels_last,,1"
+
+jobs:
+  build:
+    name: Build single model
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+    - uses: actions/cache@v3
+      id: cache-venv  # name for referring later
+      with:
+        path: |
+          venv/
+        key: ${{ github.job }}-${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ github.job }}-${{ runner.os }}-venv-
+    - name: Setup deps
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+    - name: Run script
+      run: |
+        source venv/bin/activate
+        python3 gen_model.py ${{ github.event.inputs.format }} ${{ github.event.inputs.filename }} ${{ github.event.inputs.input_shape }} ${{ github.event.inputs.num_layers }} ${{ github.event.inputs.layers }}
+    - name: Publish model artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ github.event.inputs.filename }}
+        path: ${{ github.event.inputs.filename }}
