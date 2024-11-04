@@ -45,7 +45,8 @@ python3 gen_model.py FORMAT IN_SHAPE NUM_LAYERS LAYER1_OP LAYER1_ATTRS [LAYER2_O
 #   filter_height: ignore
 #   filter_width: 10
 #   activation = relu
-python3 gen_model.py tflite out.tflite 1,1024 1 fully_connected ,10,relu
+#   use_bias = 0/1
+python3 gen_model.py tflite out.tflite 1,1024 1 fully_connected ,10,relu,1
 ```
 
 #### Conv2D
@@ -65,7 +66,8 @@ python3 gen_model.py tflite out.tflite 1,1024 1 fully_connected ,10,relu
 #   format = channels_last (NHWC)
 #   activation = none
 #   groups = 1
-python3 gen_model.py tflite out.tflite 32,32,3 1 conv2d 32,4,4,2,2,1,1,SAME,channels_last,,1
+#   use_bias = 0/1
+python3 gen_model.py tflite out.tflite 32,32,3 1 conv2d 32,4,4,2,2,1,1,SAME,channels_last,,1,1
 ```
 
 #### DepthwiseConv2D
@@ -84,7 +86,8 @@ python3 gen_model.py tflite out.tflite 32,32,3 1 conv2d 32,4,4,2,2,1,1,SAME,chan
 #   padding = SAME
 #   format = channels_last (NHWC)
 #   activation = relu
-python3 gen_model.py tflite out.tflite 32,32,3 1 depthwise_conv2d 16,4,4,2,2,1,1,SAME,channels_last,relu
+#   use_bias = 0/1
+python3 gen_model.py tflite out.tflite 32,32,3 1 depthwise_conv2d 16,4,4,2,2,1,1,SAME,channels_last,relu,1
 ```
 
 #### Pooling
