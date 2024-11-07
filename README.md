@@ -46,7 +46,7 @@ python3 gen_model.py FORMAT IN_SHAPE NUM_LAYERS LAYER1_OP LAYER1_ATTRS [LAYER2_O
 #   filter_width: 10
 #   activation = relu
 #   use_bias = 0/1
-python3 gen_model.py tflite out.tflite 1,1024 1 fully_connected ,10,relu,1
+python3 gen_model.py tflite out.tflite 1024 1 fully_connected ,10,relu,1
 ```
 
 #### Conv2D
