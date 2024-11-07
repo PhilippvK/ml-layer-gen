@@ -25,12 +25,37 @@ import numpy as np
 assert len(sys.argv) >= 7
 
 OP_PARAMS_KEYS = {
-  "flatten": ["placeholder"],
-  "fully_connected": ["filter_h", "filter_w", "activation", "bias"],
-  "max_pool2d": ["pool_h", "pool_w", "stride_h", "stride_w", "padding", "data_format"],
-  "avg_pool2d": ["pool_h", "pool_w", "stride_h", "stride_w", "padding", "data_format"],
-  "conv2d": ["filters", "kernel_h", "kernel_w", "stride_h", "stride_w", "dilation_h", "dilation_w", "padding", "data_format", "activation", "groups", "bias"],
-  "depthwise_conv2d": ["multiplier", "kernel_h", "kernel_w", "stride_h", "stride_w", "dilation_h", "dilation_w", "padding", "data_format", "activation", "bias"],
+    "flatten": ["placeholder"],
+    "fully_connected": ["filter_h", "filter_w", "activation", "bias"],
+    "max_pool2d": ["pool_h", "pool_w", "stride_h", "stride_w", "padding", "data_format"],
+    "avg_pool2d": ["pool_h", "pool_w", "stride_h", "stride_w", "padding", "data_format"],
+    "conv2d": [
+        "filters",
+        "kernel_h",
+        "kernel_w",
+        "stride_h",
+        "stride_w",
+        "dilation_h",
+        "dilation_w",
+        "padding",
+        "data_format",
+        "activation",
+        "groups",
+        "bias",
+    ],
+    "depthwise_conv2d": [
+        "multiplier",
+        "kernel_h",
+        "kernel_w",
+        "stride_h",
+        "stride_w",
+        "dilation_h",
+        "dilation_w",
+        "padding",
+        "data_format",
+        "activation",
+        "bias",
+    ],
 }
 
 
@@ -51,14 +76,16 @@ all_op_params = []
 for layer in range(num_layers):
 
     # op
-    op_name = sys.argv[5+layer*2]
+    op_name = sys.argv[5 + layer * 2]
     assert op_name in OP_PARAMS_KEYS.keys(), f"Unsupported op: {op_name}"
     all_op_names.append(op_name)
 
     # op params
     op_params_keys = OP_PARAMS_KEYS[op_name]
-    op_params_values = sys.argv[5+layer*2+1].split(",")
-    assert len(op_params_keys) == len(op_params_values), f"Invalid number of params. Need {len(op_params_keys)} values. {op_params_keys}"
+    op_params_values = sys.argv[5 + layer * 2 + 1].split(",")
+    assert len(op_params_keys) == len(
+        op_params_values
+    ), f"Invalid number of params. Need {len(op_params_keys)} values. {op_params_keys}"
     op_params = dict(zip(op_params_keys, op_params_values))
     all_op_params.append(op_params)
 
@@ -67,87 +94,113 @@ for layer in range(num_layers):
 # a,b,c,d
 # output_shape = tuple(map(int, sys.argv[4+num_layers*2+1].split(",")))
 
+
 def get_flatten(op_name, op_params):
-   return tf.keras.layers.Flatten()
+    return tf.keras.layers.Flatten()
+
 
 # def get_fully_connected(op_name, op_params, in_shape, out_shape):
 def get_fully_connected(op_name, op_params):
-   assert "filter_w" in op_params
-   units = int(op_params["filter_w"])
-   assert "activation" in op_params
-   activation = op_params["activation"]
-   if len(activation) == 0:
-       activation = None
-   bias = op_params["bias"]
-   if len(bias) == 0:
-      bias = False
-   else:
-      bias = bool(int(bias))
-   # x = tf.keras.layers.Flatten(input_shape=in_shape)
-   # x = tf.keras.layers.Reshape((out_shape[0], -1))(inp)
-   # return tf.keras.layers.Dense(units, activation=activation, input_shape=in_shape)
-   return tf.keras.layers.Dense(units, activation=activation, use_bias=bias)
+    assert "filter_w" in op_params
+    units = int(op_params["filter_w"])
+    assert "activation" in op_params
+    activation = op_params["activation"]
+    if len(activation) == 0:
+        activation = None
+    bias = op_params["bias"]
+    if len(bias) == 0:
+        bias = False
+    else:
+        bias = bool(int(bias))
+    print("bias", bias)
+    # x = tf.keras.layers.Flatten(input_shape=in_shape)
+    # x = tf.keras.layers.Reshape((out_shape[0], -1))(inp)
+    # return tf.keras.layers.Dense(units, activation=activation, input_shape=in_shape)
+    # return tf.keras.layers.Dense(units, activation=activation, use_bias=bias)
+    return tf.keras.layers.Dense(units, activation=activation, use_bias=bias)
+
 
 # def get_pool2d(op_name, op_params, in_shape, out_shape, type="max"):
 def get_pool2d(op_name, op_params, type="max"):
-   assert "pool_h" in op_params
-   pool_h = int(op_params["pool_h"])
-   assert "pool_w" in op_params
-   pool_w = int(op_params["pool_w"])
-   assert "stride_h" in op_params
-   stride_h = int(op_params["stride_h"])
-   assert "stride_w" in op_params
-   stride_w = int(op_params["stride_w"])
-   assert "padding" in op_params
-   padding = op_params["padding"]
-   assert "data_format" in op_params
-   data_format = op_params["data_format"]  # channels_last/channels_first
-   assert type in ["max", "avg"]
-   op = tf.keras.layers.MaxPooling2D if type == "max" else tf.keras.layers.AveragePooling2D
-   # return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format, input_shape=in_shape)
-   return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format)
+    assert "pool_h" in op_params
+    pool_h = int(op_params["pool_h"])
+    assert "pool_w" in op_params
+    pool_w = int(op_params["pool_w"])
+    assert "stride_h" in op_params
+    stride_h = int(op_params["stride_h"])
+    assert "stride_w" in op_params
+    stride_w = int(op_params["stride_w"])
+    assert "padding" in op_params
+    padding = op_params["padding"]
+    assert "data_format" in op_params
+    data_format = op_params["data_format"]  # channels_last/channels_first
+    assert type in ["max", "avg"]
+    op = tf.keras.layers.MaxPooling2D if type == "max" else tf.keras.layers.AveragePooling2D
+    # return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format, input_shape=in_shape)
+    return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format)
+
 
 # def get_conv2d(op_name, op_params, in_shape, out_shape, depthwise=False):
 def get_conv2d(op_name, op_params, depthwise=False):
-   assert "kernel_h" in op_params
-   kernel_h = int(op_params["kernel_h"])
-   assert "kernel_w" in op_params
-   kernel_w = int(op_params["kernel_w"])
-   assert "stride_h" in op_params
-   stride_h = int(op_params["stride_h"])
-   assert "stride_w" in op_params
-   stride_w = int(op_params["stride_w"])
-   assert "dilation_h" in op_params
-   dilation_h = int(op_params["dilation_h"])
-   assert "dilation_w" in op_params
-   dilation_w = int(op_params["dilation_w"])
-   assert "padding" in op_params
-   padding = op_params["padding"]
-   assert "data_format" in op_params
-   data_format = op_params["data_format"]  # channels_last/channels_first
-   assert "activation" in op_params
-   activation = op_params["activation"]
-   if len(activation) == 0:
-       activation = None
-   bias = op_params["bias"]
-   if len(bias) == 0:
-      bias = False
-   else:
-      bias = bool(int(bias))
+    assert "kernel_h" in op_params
+    kernel_h = int(op_params["kernel_h"])
+    assert "kernel_w" in op_params
+    kernel_w = int(op_params["kernel_w"])
+    assert "stride_h" in op_params
+    stride_h = int(op_params["stride_h"])
+    assert "stride_w" in op_params
+    stride_w = int(op_params["stride_w"])
+    assert "dilation_h" in op_params
+    dilation_h = int(op_params["dilation_h"])
+    assert "dilation_w" in op_params
+    dilation_w = int(op_params["dilation_w"])
+    assert "padding" in op_params
+    padding = op_params["padding"]
+    assert "data_format" in op_params
+    data_format = op_params["data_format"]  # channels_last/channels_first
+    assert "activation" in op_params
+    activation = op_params["activation"]
+    if len(activation) == 0:
+        activation = None
+    bias = op_params["bias"]
+    if len(bias) == 0:
+        bias = False
+    else:
+        bias = bool(int(bias))
 
-   if depthwise:
-       assert "multiplier" in op_params
-       multiplier = int(op_params["multiplier"])
-       # print("IN", in_shape)
-       # return tf.keras.layers.DepthwiseConv2D((kernel_h, kernel_w), depth_multiplier=multiplier, strides=(stride_h, stride_w), padding=padding, data_format=data_format, dilation_rate=(dilation_h, dilation_w),  activation=activation, input_shape=in_shape)
-       return tf.keras.layers.DepthwiseConv2D((kernel_h, kernel_w), depth_multiplier=multiplier, strides=(stride_h, stride_w), padding=padding, data_format=data_format, dilation_rate=(dilation_h, dilation_w),  activation=activation, use_bias=bias)
-   else:
-       assert "filters" in op_params
-       filters = int(op_params["filters"])
-       assert "groups" in op_params
-       groups = int(op_params["groups"]) if len(op_params["groups"]) > 0 else 1
-       # return tf.keras.layers.Conv2D(filters, (kernel_h, kernel_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format, dilation_rate=(dilation_h, dilation_w),  activation=activation, input_shape=in_shape)
-       return tf.keras.layers.Conv2D(filters, (kernel_h, kernel_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format, dilation_rate=(dilation_h, dilation_w),  activation=activation, groups=groups, use_bias=bias)
+    if depthwise:
+        assert "multiplier" in op_params
+        multiplier = int(op_params["multiplier"])
+        # print("IN", in_shape)
+        # return tf.keras.layers.DepthwiseConv2D((kernel_h, kernel_w), depth_multiplier=multiplier, strides=(stride_h, stride_w), padding=padding, data_format=data_format, dilation_rate=(dilation_h, dilation_w),  activation=activation, input_shape=in_shape)
+        return tf.keras.layers.DepthwiseConv2D(
+            (kernel_h, kernel_w),
+            depth_multiplier=multiplier,
+            strides=(stride_h, stride_w),
+            padding=padding,
+            data_format=data_format,
+            dilation_rate=(dilation_h, dilation_w),
+            activation=activation,
+            use_bias=bias,
+        )
+    else:
+        assert "filters" in op_params
+        filters = int(op_params["filters"])
+        assert "groups" in op_params
+        groups = int(op_params["groups"]) if len(op_params["groups"]) > 0 else 1
+        # return tf.keras.layers.Conv2D(filters, (kernel_h, kernel_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format, dilation_rate=(dilation_h, dilation_w),  activation=activation, input_shape=in_shape)
+        return tf.keras.layers.Conv2D(
+            filters,
+            (kernel_h, kernel_w),
+            strides=(stride_h, stride_w),
+            padding=padding,
+            data_format=data_format,
+            dilation_rate=(dilation_h, dilation_w),
+            activation=activation,
+            groups=groups,
+            use_bias=bias,
+        )
+
 
 # def add_keras_layer(op_name, op_params, in_shape, out_shape):
 def add_keras_layer(op_name, op_params):
@@ -176,7 +229,9 @@ for layer in range(num_layers):
     # x = add_keras_layer(all_op_names[layer], all_op_params[layer], in_shape=input_shape, out_shape=output_shape))
     model.add(add_keras_layer(all_op_names[layer], all_op_params[layer]))
 # model = tf.keras.models.Model(inputs=inp, outputs=outp)
-model.compile(optimizer='adam', loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
+model.compile(
+    optimizer="adam", loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=["accuracy"]
+)
 # try:
 #     model.fit([], [], batch_size=500, epoch=20, validation_split=0.1)
 # except:
@@ -186,6 +241,7 @@ print(model.summary())
 if mode == "keras":
     model.save(out_file)
 elif mode == "tflite":
+
     def rep_dataset():
         for _ in range(100):
             data = np.random.rand(1, *input_shape)
