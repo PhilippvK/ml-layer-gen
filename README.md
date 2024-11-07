@@ -1,4 +1,7 @@
 # ml-layer-gen
+
+[![CI](https://github.com/PhilippvK/ml-layer-gen/actions/workflows/test.yml/badge.svg)](https://github.com/PhilippvK/ml-layer-gen/actions/workflows/test.yml)
+
 Generate simple ML Models (Keras, Relay, TFLite) for testing effortlessly on the cmdline.
 
 ## Formats
