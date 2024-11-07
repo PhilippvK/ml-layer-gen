@@ -136,7 +136,8 @@ def get_pool2d(op_name, op_params, type="max"):
     data_format = op_params["data_format"]  # channels_last/channels_first
     assert type in ["max", "avg"]
     op = tf.keras.layers.MaxPooling2D if type == "max" else tf.keras.layers.AveragePooling2D
-    # return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format, input_shape=in_shape)
+    # return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w),
+    # padding=padding, data_format=data_format, input_shape=in_shape)
     return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format)
 
 
@@ -172,7 +173,9 @@ def get_conv2d(op_name, op_params, depthwise=False):
         assert "multiplier" in op_params
         multiplier = int(op_params["multiplier"])
         # print("IN", in_shape)
-        # return tf.keras.layers.DepthwiseConv2D((kernel_h, kernel_w), depth_multiplier=multiplier, strides=(stride_h, stride_w), padding=padding, data_format=data_format, dilation_rate=(dilation_h, dilation_w),  activation=activation, input_shape=in_shape)
+        # return tf.keras.layers.DepthwiseConv2D((kernel_h, kernel_w), depth_multiplier=multiplier,
+        # strides=(stride_h, stride_w), padding=padding, data_format=data_format,
+        # dilation_rate=(dilation_h, dilation_w),  activation=activation, input_shape=in_shape)
         return tf.keras.layers.DepthwiseConv2D(
             (kernel_h, kernel_w),
             depth_multiplier=multiplier,
@@ -188,7 +191,9 @@ def get_conv2d(op_name, op_params, depthwise=False):
         filters = int(op_params["filters"])
         assert "groups" in op_params
         groups = int(op_params["groups"]) if len(op_params["groups"]) > 0 else 1
-        # return tf.keras.layers.Conv2D(filters, (kernel_h, kernel_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format, dilation_rate=(dilation_h, dilation_w),  activation=activation, input_shape=in_shape)
+        # return tf.keras.layers.Conv2D(filters, (kernel_h, kernel_w), strides=(stride_h, stride_w), padding=padding,
+        # data_format=data_format, dilation_rate=(dilation_h, dilation_w),  activation=activation,
+        # input_shape=in_shape)
         return tf.keras.layers.Conv2D(
             filters,
             (kernel_h, kernel_w),

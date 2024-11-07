@@ -18,8 +18,6 @@
 #
 import sys
 
-# import tensorflow as tf
-import numpy as np
 
 assert len(sys.argv) >= 8
 
@@ -148,7 +146,8 @@ class RelayWriter:
         # data_format = op_params["data_format"]  # channels_last/channels_first
         # assert type in ["max", "avg"]
         # op = tf.keras.layers.MaxPooling2D if type == "max" else tf.keras.layers.AveragePooling2D
-        # # return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format, input_shape=in_shape)
+        # # return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w),
+        # padding=padding, data_format=data_format, input_shape=in_shape)
         # return op(pool_size=(pool_h, pool_w), strides=(stride_h, stride_w), padding=padding, data_format=data_format)
 
     def add_conv2d_layer(self, op_params, depthwise=False):
@@ -194,6 +193,8 @@ class RelayWriter:
         if depthwise:
             assert "multiplier" in op_params
             multiplier = int(op_params["multiplier"])
+            if multiplier != 1:
+                raise NotImplementedError
             groups = in_channels
         else:
             assert "filters" in op_params
@@ -229,6 +230,10 @@ class RelayWriter:
         elif padding == "same":
             dilated_kernel_h = dilation_h * (kernel_h - 1) + 1
             dilated_kernel_w = dilation_w * (kernel_w - 1) + 1
+
+            def get_pad_value(a, b, c):  # TODO
+                raise NotImplementedError
+
             pad_top, pad_bottom = get_pad_value(input_h, dilated_kernel_h, stride_h)
             pad_left, pad_right = get_pad_value(input_w, dilated_kernel_w, stride_w)
             do_pad = not (pad_top == 0 and pad_bottom == 0 and pad_left == 0 and pad_right == 0)
