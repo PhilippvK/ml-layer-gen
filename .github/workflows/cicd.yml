@@ -21,7 +21,7 @@ on:
       layers:
         description: "Layers"
         required: true
-        default: "conv2d 32,4,4,2,2,1,1,SAME,channels_last,,1"
+        default: "conv2d 32,4,4,2,2,1,1,SAME,channels_last,,1,1"
 
 jobs:
   build:
