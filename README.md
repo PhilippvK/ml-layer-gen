@@ -120,13 +120,17 @@ To between conv2d/pool2d and dense layers a flatten layer might be required!
 # Output: out.tflite
 # Input Shape: 32,32,3 (3-dim)
 # Number of Layers: 4
-# Layer 1 Operator: max_pool/avg_pool
+# Layer 1 Operator: conv2d
 # Layer 1 Attributes:
-#   (pool_h,pool_w) = (2,2)
+#   filters = 32
+#   (kernel_h,kernel_w) = (4,4)
 #   (stride_h,stride_w) = (2,2)
 #   (dilation_h,dikation_w) = (1,1)
-#   padding = VALID
+#   padding = SAME
 #   format = channels_last (NHWC)
+#   activation = none
+#   groups = 1
+#   use_bias = 0/1
 # Layer 2 Operator: avg_pool
 # Layer 2 Attributes:
 #   (pool_h,pool_w) = (2,2)
@@ -141,9 +145,10 @@ To between conv2d/pool2d and dense layers a flatten layer might be required!
 #   filter_height: ignore
 #   filter_width: 10
 #   activation = relu
+#   use_bias = 0/1
 python3 gen_model.py tflite out2.tflite 32,32,3 4 \
-    conv2d 32,4,4,2,2,1,1,SAME,channels_last,relu,1 \
+    conv2d 32,4,4,2,2,1,1,SAME,channels_last,relu,1,1 \
     avg_pool2d 2,2,2,2,VALID,channels_last \
     flatten _ \
-    fully_connected ,10,relu
+    fully_connected ,10,relu,1
 ```
