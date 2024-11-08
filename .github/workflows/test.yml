@@ -43,7 +43,7 @@ jobs:
         - "32,32,3 1 depthwise_conv2d 16,4,4,2,2,1,1,SAME,channels_last,relu,1"
         - "196,196,24 1 max_pool2d 2,2,2,2,VALID,channels_last"
         - "196,196,24 1 avg_pool2d 2,2,2,2,VALID,channels_last"
-        - "32,32,3 4 conv2d 32,4,4,2,2,1,1,SAME,channels_last,relu,1 avg_pool2d 2,2,2,2,VALID,channels_last flatten _ fully_connected ,10,relu"
+        - "32,32,3 4 conv2d 32,4,4,2,2,1,1,SAME,channels_last,relu,1,1 avg_pool2d 2,2,2,2,VALID,channels_last flatten _ fully_connected ,10,relu,1"
       fail-fast: false
     steps:
     - name: Checkout
