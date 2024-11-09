@@ -57,7 +57,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.config.python-version }}
     - uses: actions/cache@v3
       id: cache-venv  # name for referring later
       with:
