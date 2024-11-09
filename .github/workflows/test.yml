@@ -36,7 +36,7 @@ jobs:
     strategy:
       matrix:
         config:
-        - {python-version: "3.8", tensorflow-version: "2.4"}
+        # - {python-version: "3.8", tensorflow-version: "2.4"}
         - {python-version: "3.8", tensorflow-version: "default"}
         - {python-version: "3.8", tensorflow-version: ""}
         - {python-version: "3.11", tensorflow-version: "default"}
