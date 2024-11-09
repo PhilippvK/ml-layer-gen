@@ -35,8 +35,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.11"]
-        tensorflow-version: ["2.4", "default", ""]
+        config:
+        - {python-version: "3.8", tensorflow-version: "2.4"}
+        - {python-version: "3.8", tensorflow-version: "default"}
+        - {python-version: "3.8", tensorflow-version: ""}
+        - {python-version: "3.11", tensorflow-version: "default"}
+        - {python-version: "3.11", tensorflow-version: ""}
         fmt: ["tflite", "keras"]
         args:
         - "1024 1 fully_connected ,10,relu,1"
@@ -59,7 +63,7 @@ jobs:
       with:
         path: |
           venv/
-        key: ${{ github.job }}-${{ runner.os }}-$${{ matrix.python-version }}-venv-${{ hashFiles('**/requirements*.txt') }}-${{ matrix.tensorflow-version }}
+        key: ${{ github.job }}-${{ runner.os }}-$${{ matrix.config.python-version }}-venv-${{ hashFiles('**/requirements*.txt') }}-${{ matrix.config.tensorflow-version }}
         restore-keys: |
           ${{ github.job }}-${{ runner.os }}-venv-
     - name: Setup venv
@@ -69,14 +73,14 @@ jobs:
     - name: Setup deps
       run: |
         source venv/bin/activate
-        if [[ "${{ matrix.tensorflow-version }}" == "default" ]]
+        if [[ "${{ matrix.config.tensorflow-version }}" == "default" ]]
         then
             pip3 install -r requirements.txt
-        elif [[ "$${{ matrix.tensorflow-version }}" == "" ]]
+        elif [[ "$${{ matrix.config.tensorflow-version }}" == "" ]]
         then
             pip3 install tensorflow
         else
-            pip3 install "tensorflow==${{ matrix.tensorflow-version }}"
+            pip3 install "tensorflow==${{ matrix.config.tensorflow-version }}"
         fi
     - name: Run script
       run: |
