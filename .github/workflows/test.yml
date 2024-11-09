@@ -53,12 +53,12 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.config.python-version }}
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       id: cache-venv  # name for referring later
       with:
         path: |
@@ -76,7 +76,7 @@ jobs:
         if [[ "${{ matrix.config.tensorflow-version }}" == "default" ]]
         then
             pip3 install -r requirements.txt
-        elif [[ "$${{ matrix.config.tensorflow-version }}" == "" ]]
+        elif [[ "${{ matrix.config.tensorflow-version }}" == "" ]]
         then
             pip3 install tensorflow
         else
