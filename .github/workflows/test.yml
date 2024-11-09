@@ -35,7 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.8", "3.11"]
+        tensorflow-version: ["2.4", "default", ""]
         fmt: ["tflite", "keras"]
         args:
         - "1024 1 fully_connected ,10,relu,1"
@@ -58,14 +59,25 @@ jobs:
       with:
         path: |
           venv/
-        key: ${{ github.job }}-${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt') }}
+        key: ${{ github.job }}-${{ runner.os }}-$${{ matrix.python-version }}-venv-${{ hashFiles('**/requirements*.txt') }}-${{ matrix.tensorflow-version }}
         restore-keys: |
           ${{ github.job }}-${{ runner.os }}-venv-
-    - name: Setup deps
+    - name: Setup venv
       run: |
         python3 -m venv venv
         source venv/bin/activate
-        pip3 install -r requirements.txt
+    - name: Setup deps
+      run: |
+        source venv/bin/activate
+        if [[ "${{ matrix.tensorflow-version }}" == "default" ]]
+        then
+            pip3 install -r requirements.txt
+        elif [[ "$${{ matrix.tensorflow-version }}" == "" ]]
+        then
+            pip3 install tensorflow
+        else
+            pip3 install "tensorflow==${{ matrix.tensorflow-version }}"
+        fi
     - name: Run script
       run: |
         source venv/bin/activate
