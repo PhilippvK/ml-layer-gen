@@ -1,4 +1,1 @@
-# numpy
-# tflite
 tensorflow~=2.13.0
-# flatbuffers
